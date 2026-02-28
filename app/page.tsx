@@ -8,8 +8,6 @@ import Locations from '@/components/Locations';
 import Costs from '@/components/Costs';
 import PersonTodos from '@/components/PersonTodos';
 
-const PEOPLE = ['Hana', 'Dustin', 'Yvette', 'Justin'];
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -27,12 +25,7 @@ export default function Home() {
         {activeTab === 'checklist' && <Checklist />}
         {activeTab === 'locations' && <Locations />}
         {activeTab === 'costs' && <Costs />}
-        {PEOPLE.map(
-          (p) =>
-            activeTab === p.toLowerCase() && (
-              <PersonTodos key={p} person={p} />
-            )
-        )}
+        {activeTab === 'tasks' && <PersonTodos />}
       </main>
     </>
   );

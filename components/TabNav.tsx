@@ -5,10 +5,7 @@ const TABS = [
   { id: 'checklist', label: 'Checklist' },
   { id: 'locations', label: 'Locations' },
   { id: 'costs', label: 'Costs' },
-  { id: 'hana', label: 'Hana' },
-  { id: 'dustin', label: 'Dustin' },
-  { id: 'yvette', label: 'Yvette' },
-  { id: 'justin', label: 'Justin' },
+  { id: 'tasks', label: 'Tasks' },
 ];
 
 export default function TabNav({
