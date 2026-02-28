@@ -9,6 +9,7 @@ interface Cost {
   amount: number;
   category: string;
   date: string | null;
+  is_final: boolean;
 }
 
 const CATEGORIES = ['Truck Rental', 'Gas', 'Packing Supplies', 'Storage Fees', 'Food/Lodging', 'Other'];
@@ -41,12 +42,19 @@ export default function Costs() {
     setDate('');
   }
 
+  async function toggleFinal(cost: Cost) {
+    await supabase.from('move_costs').update({ is_final: !cost.is_final }).eq('id', cost.id);
+    setCosts((prev) => prev.map((c) => (c.id === cost.id ? { ...c, is_final: !c.is_final } : c)));
+  }
+
   async function deleteCost(id: string) {
     await supabase.from('move_costs').delete().eq('id', id);
     setCosts((prev) => prev.filter((c) => c.id !== id));
   }
 
   const total = costs.reduce((s, c) => s + Number(c.amount), 0);
+  const finalTotal = costs.filter((c) => c.is_final).reduce((s, c) => s + Number(c.amount), 0);
+  const estimateTotal = costs.filter((c) => !c.is_final).reduce((s, c) => s + Number(c.amount), 0);
   const byCategory: Record<string, number> = {};
   costs.forEach((c) => {
     byCategory[c.category] = (byCategory[c.category] || 0) + Number(c.amount);
@@ -60,6 +68,16 @@ export default function Costs() {
         <span className="bg-snow px-3 py-1.5 rounded-md text-sm">
           Total: <span className="font-bold text-mountain">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </span>
+        {finalTotal > 0 && (
+          <span className="bg-emerald-50 px-3 py-1.5 rounded-md text-sm">
+            Final: <span className="font-bold text-emerald-700">${finalTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          </span>
+        )}
+        {estimateTotal > 0 && (
+          <span className="bg-amber-50 px-3 py-1.5 rounded-md text-sm">
+            Estimates: <span className="font-bold text-amber-700">${estimateTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          </span>
+        )}
         {Object.entries(byCategory).map(([cat, amt]) => (
           <span key={cat} className="bg-snow px-3 py-1.5 rounded-md text-sm">
             {cat}: <span className="font-bold text-mountain">${amt.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
@@ -113,6 +131,7 @@ export default function Costs() {
                 <th className="text-left p-2 font-semibold text-gray-500">Category</th>
                 <th className="text-left p-2 font-semibold text-gray-500">Date</th>
                 <th className="text-right p-2 font-semibold text-gray-500">Amount</th>
+                <th className="text-center p-2 font-semibold text-gray-500">Status</th>
                 <th className="w-10 text-center p-2"></th>
               </tr>
             </thead>
@@ -124,6 +143,18 @@ export default function Costs() {
                   <td className="p-2">{c.date || '—'}</td>
                   <td className="p-2 text-right font-semibold">
                     ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="p-2 text-center">
+                    <button
+                      onClick={() => toggleFinal(c)}
+                      className={`text-xs font-bold px-2 py-0.5 rounded cursor-pointer border-none ${
+                        c.is_final
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-amber-50 text-amber-600'
+                      }`}
+                    >
+                      {c.is_final ? 'Final' : 'Estimate'}
+                    </button>
                   </td>
                   <td className="p-2 text-center">
                     <button

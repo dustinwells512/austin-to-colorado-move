@@ -9,6 +9,7 @@ interface Location {
   type: string;
   status: string;
   notes: string | null;
+  address: string | null;
 }
 
 const STATUSES = ['Not Started', 'Packing', 'Packed', 'Loaded', 'In Transit', 'Delivered'];
@@ -19,6 +20,10 @@ const STATUS_COLORS: Record<string, string> = {
   'Not Started': '#bbb', Packing: '#e17055', Packed: '#fdcb6e', Loaded: '#74b9ff',
   'In Transit': '#a29bfe', Delivered: '#00b894',
 };
+
+function mapsUrl(address: string) {
+  return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+}
 
 export default function Locations() {
   const [locations, setLocations] = useState<Location[]>([]);
@@ -57,10 +62,20 @@ export default function Locations() {
               className="bg-white rounded-lg shadow-sm p-4"
               style={{ borderLeft: `4px solid ${loc.type === 'destination' ? '#6b8f71' : '#3d5a80'}` }}
             >
-              <h3 className="text-sm font-semibold mb-2">
+              <h3 className="text-sm font-semibold mb-1">
                 {loc.type === 'destination' ? '🏠 ' : '📦 '}
                 {loc.name}
               </h3>
+              {loc.address && (
+                <a
+                  href={mapsUrl(loc.address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-xs text-sky hover:text-mountain underline mb-2"
+                >
+                  📍 {loc.address}
+                </a>
+              )}
               <select
                 value={loc.status}
                 onChange={(e) => updateStatus(loc.id, e.target.value)}
