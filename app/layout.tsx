@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Austin → Montrose Move Planner',
   description: 'Shared move planner for Hana, Dustin, Yvette, and Justin',
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({
