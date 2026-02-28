@@ -118,7 +118,7 @@ export default function Costs() {
             </thead>
             <tbody>
               {costs.map((c) => (
-                <tr key={c.id} className="border-b border-gray-50">
+                <tr key={c.id} className="border-b border-gray-50 transition-colors hover:bg-snow">
                   <td className="p-2">{c.description}</td>
                   <td className="p-2">{c.category}</td>
                   <td className="p-2">{c.date || '—'}</td>

@@ -23,6 +23,7 @@ export default function Checklist() {
   const [editDesc, setEditDesc] = useState('');
   const [editDue, setEditDue] = useState('');
   const [editNotes, setEditNotes] = useState('');
+  const [editPhase, setEditPhase] = useState(PHASES[0]);
 
   async function load() {
     const { data } = await supabase
@@ -61,18 +62,19 @@ export default function Checklist() {
     setEditDesc(item.description);
     setEditDue(item.due_date || '');
     setEditNotes(item.notes || '');
+    setEditPhase(item.phase);
   }
 
   async function saveEdit() {
     if (!editingId) return;
     await supabase
       .from('move_checklist')
-      .update({ description: editDesc, due_date: editDue || null, notes: editNotes || null })
+      .update({ description: editDesc, due_date: editDue || null, notes: editNotes || null, phase: editPhase })
       .eq('id', editingId);
     setItems((prev) =>
       prev.map((i) =>
         i.id === editingId
-          ? { ...i, description: editDesc, due_date: editDue || null, notes: editNotes || null }
+          ? { ...i, description: editDesc, due_date: editDue || null, notes: editNotes || null, phase: editPhase }
           : i
       )
     );
@@ -117,7 +119,7 @@ export default function Checklist() {
             {phaseItems.map((item) => (
               <div
                 key={item.id}
-                className={`flex items-start gap-3 py-2 border-b border-gray-50 last:border-b-0 ${
+                className={`flex items-start gap-3 py-2 px-2 -mx-2 rounded-md border-b border-gray-50 last:border-b-0 transition-colors hover:bg-snow ${
                   item.done ? 'opacity-50' : ''
                 }`}
               >
@@ -136,7 +138,16 @@ export default function Checklist() {
                         onChange={(e) => setEditDesc(e.target.value)}
                         className="px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:border-sky"
                       />
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
+                        <select
+                          value={editPhase}
+                          onChange={(e) => setEditPhase(e.target.value)}
+                          className="px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:border-sky"
+                        >
+                          {PHASES.map((p) => (
+                            <option key={p}>{p}</option>
+                          ))}
+                        </select>
                         <input
                           type="date"
                           value={editDue}

@@ -107,7 +107,7 @@ export default function PersonTodos({ person }: { person: string }) {
       {sorted.map((t) => (
         <div
           key={t.id}
-          className={`flex items-start gap-3 py-2 border-b border-gray-50 last:border-b-0 ${
+          className={`flex items-start gap-3 py-2 px-2 -mx-2 rounded-md border-b border-gray-50 last:border-b-0 transition-colors hover:bg-snow ${
             t.done ? 'opacity-50' : ''
           }`}
         >
